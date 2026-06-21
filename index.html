@@ -6,54 +6,91 @@
     <title>ACF EL COET</title>
 
     <link rel="stylesheet" href="css/estilos.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ff0000">
 
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff0000">
 
+    <!-- iPhone PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
 
 <body>
 
 <header>
-
     <img src="img/logo.png" alt="Logo ACF EL COET" class="logo">
-
     <h1>ACF EL COET</h1>
-
     <p>Associació Cultural Festera</p>
-
 </header>
 
 <main>
-
-    <a href="programa.html" class="tarjeta">
-        📅 Programa de Festes
-    </a>
-
-    <a href="encuestas.html" class="tarjeta">
-        🗳️ Enquestes
-    </a>
-
-    <a href="junta.html" class="tarjeta">
-        👥 Junta General
-    </a>
-
-    <a href="galeria.html" class="tarjeta">
-        📷 Galeria
-    </a>
-
-    <a href="informacion.html" class="tarjeta">
-        ℹ️ Informació
-    </a>
-
+    <a href="programa.html" class="tarjeta">📅 Programa de Festes</a>
+    <a href="encuestas.html" class="tarjeta">🗳️ Enquestes</a>
+    <a href="junta.html" class="tarjeta">👥 Junta General</a>
+    <a href="galeria.html" class="tarjeta">📷 Galeria</a>
+    <a href="informacion.html" class="tarjeta">ℹ️ Informació</a>
 </main>
 
-<script src="js/app.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+
+<script>
+  // CONFIGURACIÓN DE TU PROYECTO FIREBASE
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaSntwFmwCAylPt1qSKGRP9uvAbcTn6AI",
+    authDomain: "acfelcoet-d1f84.firebaseapp.com",
+    projectId: "acfelcoet-d1f84",
+    storageBucket: "acfelcoet-d1f84.firebasestorage.app",
+    messagingSenderId: "28904173482",
+    appId: "1:28904173482:web:1f1f53d0634c97420bc5d3"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
+
+  // Registrar el service worker de Firebase
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("firebase-messaging-sw.js")
+      .then(reg => {
+        console.log("Service Worker de Firebase registrado:", reg);
+        return Notification.requestPermission();
+      })
+      .then(permission => {
+        if (permission === "granted") {
+          console.log("Permiso concedido");
+          return messaging.getToken({
+            vapidKey: BAReBgQIdJP01A2-TwXZBx8ZLuMLfZFtflgLna8lw7pU-adhy_1h0CIACoMigc_jpPbGsKj78LqJJkdMzOzgWmw
+          });
+        } else {
+          console.log("Permiso denegado");
+        }
+      })
+      .then(token => {
+        if (token) {
+          console.log("TOKEN FCM:", token);
+        }
+      })
+      .catch(err => console.error("Error:", err));
+  }
+
+  // Notificaciones en primer plano
+  messaging.onMessage(payload => {
+    console.log("Notificación en primer plano:", payload);
+    new Notification(payload.notification.title, {
+      body: payload.notification.body,
+      icon: payload.notification.icon || "icons/icon-192.png"
+    });
+  });
+</script>
+
+<!-- Service worker de la PWA -->
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js")
-    .then(() => console.log("Service Worker registrado"))
+    .then(() => console.log("Service Worker PWA registrado"))
     .catch(err => console.log("Error SW:", err));
 }
 </script>

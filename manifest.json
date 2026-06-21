@@ -1,0 +1,21 @@
+{
+  "name": "ACF El Coet",
+  "short_name": "El Coet",
+  "start_url": "/acf-el-coet/",
+  "scope": "/acf-el-coet/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff0000",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -65,5 +65,22 @@
 <!-- Botón flotante para volver -->
 <a href="index.html" class="floating-back">← Tornar a l'inici</a>
 
+<script>
+    // Detectar si el PDF se está viendo y mostrar botón flotante
+    document.addEventListener('DOMContentLoaded', function() {
+        const floatingBtn = document.querySelector('.floating-back');
+        
+        // Si estamos viendo un PDF, asegurar que el botón es visible
+        if (document.contentType === 'application/pdf' || window.location.href.includes('.pdf')) {
+            floatingBtn.style.display = 'flex';
+        }
+        
+        // También mostrar el botón cuando se abre el PDF en nueva pestaña
+        window.addEventListener('load', function() {
+            floatingBtn.style.display = 'flex';
+        });
+    });
+</script>
+
 </body>
 </html>

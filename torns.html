@@ -6,6 +6,29 @@
     <title>Torns de Treball</title>
 
     <link rel="stylesheet" href="css/estilos.css">
+    <style>
+        .pdf-container {
+            width: 100%;
+            margin: 1rem 0;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .pdf-container iframe {
+            width: 100%;
+            height: 70vh;
+            border: none;
+        }
+        
+        .pdf-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,10 +49,16 @@
 
         <p>Consulta els torns assignats per a les festes.</p>
 
-        <a class="boton" href="pdf/torns.pdf">
-            Obrir Torns
-        </a>
+    </div>
 
+    <div class="pdf-container">
+        <iframe src="pdf/torns.pdf" title="Torns de Treball"></iframe>
+    </div>
+
+    <div class="pdf-buttons">
+        <a class="boton" href="pdf/torns.pdf" download>
+            📥 Descarregar Torns
+        </a>
     </div>
 
     <a class="volver" href="index.html">← Tornar a l'inici</a>

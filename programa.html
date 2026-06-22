@@ -6,6 +6,29 @@
     <title>Programa de Festes</title>
 
     <link rel="stylesheet" href="css/estilos.css">
+    <style>
+        .pdf-container {
+            width: 100%;
+            margin: 1rem 0;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .pdf-container iframe {
+            width: 100%;
+            height: 70vh;
+            border: none;
+        }
+        
+        .pdf-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,10 +49,16 @@
 
         <p>Consulta el programa complet de les festes.</p>
 
-        <a class="boton" href="pdf/programa.pdf">
-            Obrir Programa
-        </a>
+    </div>
 
+    <div class="pdf-container">
+        <iframe src="pdf/programa.pdf" title="Programa de Festes"></iframe>
+    </div>
+
+    <div class="pdf-buttons">
+        <a class="boton" href="pdf/programa.pdf" download>
+            📥 Descarregar PDF
+        </a>
     </div>
 
     <a class="volver" href="index.html">← Tornar a l'inici</a>

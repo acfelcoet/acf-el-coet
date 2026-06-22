@@ -7,6 +7,21 @@
 
     <link rel="stylesheet" href="css/estilos.css">
     <style>
+        .imagen-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 2rem auto;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .imagen-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
         /* Botón flotante */
         .floating-back {
             position: fixed;
@@ -54,36 +69,20 @@
 
 <main>
     <div class="tarjeta">
-        <h2>Pròxima Junta General</h2>
+        <h2>Próxima Junta General</h2>
         <p>📅 Divendres 26 de juny de 2026</p>
         <p>📍 Ateneu de Picanya</p>
         <p>🕙 22:00 h - Sopar de sobaquillo</p>
         <p>🕚 23:15 h - Junta General</p>
-        <a class="boton" href="pdf/junta.pdf" target="_blank">
-            Obrir Convocatòria
-        </a>
+    </div>
+
+    <div class="imagen-container">
+        <img src="img/junta.jpg" alt="Convocatòria Junta General 2026" loading="lazy">
     </div>
 </main>
 
 <!-- Botón flotante para volver -->
 <a href="index.html" class="floating-back">← Tornar a l'inici</a>
-
-<script>
-    // Detectar si el PDF se está viendo y mostrar botón flotante
-    document.addEventListener('DOMContentLoaded', function() {
-        const floatingBtn = document.querySelector('.floating-back');
-        
-        // Si estamos viendo un PDF, asegurar que el botón es visible
-        if (document.contentType === 'application/pdf' || window.location.href.includes('.pdf')) {
-            floatingBtn.style.display = 'flex';
-        }
-        
-        // También mostrar el botón cuando se abre el PDF en nueva pestaña
-        window.addEventListener('load', function() {
-            floatingBtn.style.display = 'flex';
-        });
-    });
-</script>
 
 </body>
 </html>

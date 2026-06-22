@@ -7,19 +7,89 @@
 
     <link rel="stylesheet" href="css/estilos.css">
     <style>
-        .imagen-container {
+        .carrusel-container {
             width: 100%;
             max-width: 900px;
             margin: 2rem auto;
-            display: flex;
-            justify-content: center;
+            position: relative;
         }
         
-        .imagen-container img {
+        .carrusel-wrapper {
+            position: relative;
             width: 100%;
-            height: auto;
+            overflow: hidden;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .carrusel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .carrusel img {
+            width: 100%;
+            height: auto;
+            flex-shrink: 0;
+        }
+        
+        .carrusel-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .carrusel-btn {
+            padding: 0.75rem 1.25rem;
+            background-color: var(--color-primary);
+            color: var(--color-secondary);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .carrusel-btn:hover {
+            background-color: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .carrusel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .carrusel-counter {
+            font-weight: 600;
+            font-size: 1rem;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .carrusel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .dot.active {
+            background-color: var(--color-primary);
         }
         
         /* Botón flotante */
@@ -56,6 +126,11 @@
                 padding: 0.75rem 1rem;
                 font-size: 0.9rem;
             }
+            
+            .carrusel-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -73,13 +148,83 @@
         <p>Consulta el programa complet de les festes.</p>
     </div>
 
-    <div class="imagen-container">
-        <img src="img/programa.jpg" alt="Programa de Festes 2026" loading="lazy">
+    <div class="carrusel-container">
+        <div class="carrusel-wrapper">
+            <div class="carrusel" id="carrusel">
+                <img src="img/programa_Página_1.jpg" alt="Programa Página 1">
+                <img src="img/programa_Página_2.jpg" alt="Programa Página 2">
+            </div>
+        </div>
+        
+        <div class="carrusel-controls">
+            <button class="carrusel-btn" id="prevBtn" onclick="prevImage()">← Anterior</button>
+            <span class="carrusel-counter"><span id="currentPage">1</span> / <span id="totalPages">2</span></span>
+            <button class="carrusel-btn" id="nextBtn" onclick="nextImage()">Següent →</button>
+        </div>
+        
+        <div class="carrusel-dots">
+            <span class="dot active" onclick="goToImage(0)"></span>
+            <span class="dot" onclick="goToImage(1)"></span>
+        </div>
     </div>
 </main>
 
 <!-- Botón flotante para volver -->
 <a href="index.html" class="floating-back">← Tornar a l'inici</a>
+
+<script>
+    let currentIndex = 0;
+    const totalImages = 2;
+    const carrusel = document.getElementById('carrusel');
+    
+    function updateCarrusel() {
+        const offset = -currentIndex * 100;
+        carrusel.style.transform = `translateX(${offset}%)`;
+        
+        // Actualizar contador
+        document.getElementById('currentPage').textContent = currentIndex + 1;
+        
+        // Actualizar botones
+        document.getElementById('prevBtn').disabled = currentIndex === 0;
+        document.getElementById('nextBtn').disabled = currentIndex === totalImages - 1;
+        
+        // Actualizar puntos
+        document.querySelectorAll('.dot').forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+    }
+    
+    function nextImage() {
+        if (currentIndex < totalImages - 1) {
+            currentIndex++;
+            updateCarrusel();
+        }
+    }
+    
+    function prevImage() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarrusel();
+        }
+    }
+    
+    function goToImage(index) {
+        currentIndex = index;
+        updateCarrusel();
+    }
+    
+    // Soporte para teclado
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'ArrowRight') {
+            nextImage();
+        } else if (event.key === 'ArrowLeft') {
+            prevImage();
+        }
+    });
+    
+    // Inicializar
+    updateCarrusel();
+</script>
 
 </body>
 </html>

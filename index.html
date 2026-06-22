@@ -37,53 +37,94 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 
+<!-- Script para cargar configuración desde backend (SEGURO) -->
 <script>
-  // CONFIGURACIÓN DE TU PROYECTO FIREBASE
-  const firebaseConfig = {
-    apiKey: "AIzaSyBaSntwFmwCAylPt1qSKGRP9uvAbcTn6AI",
-    authDomain: "acfelcoet-d1f84.firebaseapp.com",
-    projectId: "acfelcoet-d1f84",
-    storageBucket: "acfelcoet-d1f84.firebasestorage.app",
-    messagingSenderId: "28904173482",
-    appId: "1:28904173482:web:1f1f53d0634c97420bc5d3"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const messaging = firebase.messaging();
-
-  // Registrar el service worker de Firebase
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("firebase-messaging-sw.js")
-      .then(reg => {
-        console.log("Service Worker de Firebase registrado:", reg);
-        return Notification.requestPermission();
-      })
-      .then(permission => {
-        if (permission === "granted") {
-          console.log("Permiso concedido");
-          return messaging.getToken({
-            vapidKey: "BAReBgQIdJP01A2-TwXZBx8ZLuMLfZFtflgLna8lw7pU-adhy_1h0CIACoMigc_jpPbGsKj78LqJJkdMzOzgWmw
-          });
-        } else {
-          console.log("Permiso denegado");
+  // Cargar configuración de Firebase desde servidor backend (NO hardcoded)
+  async function initializeFirebase() {
+    try {
+      // En un ambiente real, esta configuración vendría de tu servidor backend
+      // que inyecta las variables de entorno de forma segura
+      const response = await fetch('/api/firebase-config', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
         }
-      })
-      .then(token => {
-        if (token) {
-          console.log("TOKEN FCM:", token);
-        }
-      })
-      .catch(err => console.error("Error:", err));
+      });
+
+      if (!response.ok) {
+        console.warn('No se pudo cargar la configuración de Firebase desde el servidor.');
+        console.log('Para desarrollo local, usa variables de entorno o un archivo .env');
+        return;
+      }
+
+      const firebaseConfig = await response.json();
+      
+      firebase.initializeApp(firebaseConfig);
+      const messaging = firebase.messaging();
+
+      // Registrar el service worker de Firebase
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("firebase-messaging-sw.js")
+          .then(reg => {
+            console.log("Service Worker de Firebase registrado:", reg);
+            return Notification.requestPermission();
+          })
+          .then(permission => {
+            if (permission === "granted") {
+              console.log("Permiso concedido");
+              return messaging.getToken({
+                vapidKey: firebaseConfig.vapidKey
+              });
+            } else {
+              console.log("Permiso denegado");
+            }
+          })
+          .then(token => {
+            if (token) {
+              console.log("TOKEN FCM (Guardado en el servidor):", token);
+              // Aquí deberías enviar el token a tu servidor backend
+              sendTokenToBackend(token);
+            }
+          })
+          .catch(err => console.error("Error en Firebase:", err));
+      }
+
+      // Notificaciones en primer plano
+      messaging.onMessage(payload => {
+        console.log("Notificación en primer plano:", payload);
+        new Notification(payload.notification.title, {
+          body: payload.notification.body,
+          icon: payload.notification.icon || "icons/icon-192.png"
+        });
+      });
+
+    } catch (error) {
+      console.error("Error al inicializar Firebase:", error);
+    }
   }
 
-  // Notificaciones en primer plano
-  messaging.onMessage(payload => {
-    console.log("Notificación en primer plano:", payload);
-    new Notification(payload.notification.title, {
-      body: payload.notification.body,
-      icon: payload.notification.icon || "icons/icon-192.png"
-    });
-  });
+  // Función para enviar token al servidor (no mostrar en consola en producción)
+  async function sendTokenToBackend(token) {
+    try {
+      await fetch('/api/save-fcm-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token: token })
+      });
+      console.log('Token guardado en el servidor');
+    } catch (error) {
+      console.error('Error al guardar el token:', error);
+    }
+  }
+
+  // Inicializar Firebase cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFirebase);
+  } else {
+    initializeFirebase();
+  }
 </script>
 
 <!-- Service worker de la PWA -->

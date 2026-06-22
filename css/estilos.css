@@ -1,81 +1,216 @@
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#f4f6f8;
+/* =====================================================
+   ACF EL COET - Estilos Principales
+   ===================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-header{
-    text-align:center;
-    background:white;
-    padding:20px;
+:root {
+  --color-primary: #ff0000;
+  --color-primary-dark: #cc0000;
+  --color-secondary: #ffffff;
+  --color-text: #333333;
+  --color-light-bg: #f5f5f5;
+  --color-border: #e0e0e0;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 8px 12px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s ease;
 }
 
-.logo{
-    width:140px;
+/* ===== HTML & BODY ===== */
+html {
+  font-size: 16px;
 }
 
-h1{
-    color:#0d47a1;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-light-bg);
+  line-height: 1.6;
 }
 
-main{
-    max-width:700px;
-    margin:auto;
-    padding:20px;
+/* ===== HEADER ===== */
+header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-secondary);
+  padding: 2rem 1rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
 }
 
-.tarjeta{
-    display:block;
-    text-decoration:none;
-    background:white;
-    color:#333;
-    padding:25px;
-    margin-bottom:20px;
-    border-radius:20px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.1);
-    font-size:1.2rem;
-    transition:0.3s;
+header .logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  margin-bottom: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  object-fit: contain;
 }
 
-.tarjeta:hover{
-    transform:translateY(-4px);
-}
-.boton{
-    display:inline-block;
-    background:#0d47a1;
-    color:white;
-    text-decoration:none;
-    padding:12px 25px;
-    border-radius:10px;
-    margin-top:15px;
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.boton:hover{
-    opacity:0.9;
+header p {
+  font-size: 1.1rem;
+  font-weight: 300;
+  opacity: 0.95;
+  letter-spacing: 1px;
 }
 
-.volver{
-    display:inline-block;
-    margin-top:30px;
-    text-decoration:none;
-    color:#0d47a1;
-    font-weight:bold;
-}
-.galeria{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
-    gap:15px;
-    margin-top:20px;
+/* ===== MAIN CONTENT ===== */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
-.galeria img{
-    width:100%;
-    border-radius:15px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.15);
-    transition:0.3s;
-    cursor:pointer;
+/* ===== TARJETAS (CARDS) ===== */
+.tarjeta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--color-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 1.3rem;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  cursor: pointer;
+  min-height: 150px;
+  text-align: center;
+  gap: 0.5rem;
+  flex-direction: column;
 }
 
-.galeria img:hover{
-    transform:scale(1.05);
+.tarjeta:hover {
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+  border-color: var(--color-primary-dark);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-5px);
+}
+
+.tarjeta:active {
+  transform: translateY(-2px);
+}
+
+/* Emoji styling dentro de tarjetas */
+.tarjeta::before {
+  font-size: 3rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  header {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  header .logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  header p {
+    font-size: 0.95rem;
+  }
+
+  main {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 0 0.5rem 1.5rem 0.5rem;
+  }
+
+  .tarjeta {
+    padding: 1.5rem;
+    font-size: 1.1rem;
+    min-height: 130px;
+  }
+
+  .tarjeta::before {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  header p {
+    font-size: 0.85rem;
+  }
+
+  main {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .tarjeta {
+    padding: 1rem;
+    font-size: 1rem;
+    min-height: 110px;
+  }
+
+  .tarjeta::before {
+    font-size: 2rem;
+  }
+}
+
+/* ===== ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== DARK MODE ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-light-bg: #1a1a1a;
+    --color-text: #e0e0e0;
+    --color-secondary: #2a2a2a;
+    --color-border: #404040;
+  }
+
+  header .logo {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ===== IMPRESIÓN ===== */
+@media print {
+  body {
+    background: white;
+  }
+
+  header, .tarjeta {
+    box-shadow: none;
+    border: 1px solid black;
+  }
 }

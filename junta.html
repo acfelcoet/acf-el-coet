@@ -7,26 +7,40 @@
 
     <link rel="stylesheet" href="css/estilos.css">
     <style>
-        .pdf-container {
-            width: 100%;
-            margin: 1rem 0;
-            border: 2px solid var(--color-border);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .pdf-container iframe {
-            width: 100%;
-            height: 70vh;
-            border: none;
-        }
-        
-        .pdf-buttons {
+        /* Botón flotante */
+        .floating-back {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background-color: var(--color-primary);
+            color: var(--color-secondary);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 9999;
             display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin: 1rem 0;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .floating-back:hover {
+            background-color: var(--color-primary-dark);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 480px) {
+            .floating-back {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -34,44 +48,25 @@
 <body>
 
 <header>
-
     <h1>👥 Junta General</h1>
-
     <p>ACF EL COET</p>
-
 </header>
 
 <main>
-
     <div class="tarjeta">
-
         <h2>Pròxima Junta General</h2>
-
         <p>📅 Divendres 26 de juny de 2026</p>
-
         <p>📍 Ateneu de Picanya</p>
-
         <p>🕙 22:00 h - Sopar de sobaquillo</p>
-
         <p>🕚 23:15 h - Junta General</p>
-
-    </div>
-
-    <div class="pdf-container">
-        <iframe src="pdf/junta.pdf" title="Convocatòria Junta General"></iframe>
-    </div>
-
-    <div class="pdf-buttons">
-        <a class="boton" href="pdf/junta.pdf" download>
-            📥 Descarregar Convocatòria
+        <a class="boton" href="pdf/junta.pdf" target="_blank">
+            Obrir Convocatòria
         </a>
     </div>
-
-    <a class="volver" href="index.html">
-        ← Tornar a l'inici
-    </a>
-
 </main>
+
+<!-- Botón flotante para volver -->
+<a href="index.html" class="floating-back">← Tornar a l'inici</a>
 
 </body>
 </html>

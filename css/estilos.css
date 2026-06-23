@@ -269,3 +269,12 @@ main {
     border: 1px solid black;
   }
 }
+/* Estilos para la página Recorregut Passà del Quadret */
+.pasa-imagen {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+  display: block;
+  margin: 1rem auto;
+}

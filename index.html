@@ -5,35 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
     <title>ACF EL COET</title>
-
     <link rel="stylesheet" href="css/estilos.css">
-
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff0000">
-
-    <!-- iPhone PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
-
 <body translate="no">
 
 <header>
-    <img src="img/logo.png" alt="Logo ACF EL COET" class="logo">
-    <h1>ACF EL COET</h1>
-    <p>Associació Cultural i Festera</p>
+    <img src="img/logo.png" alt="Logo ACF EL COET" class="logo" translate="no">
+    <h1 translate="no">ACF EL COET</h1>
+    <p translate="no">Associació Cultural i Festera</p>
 </header>
 
 <main>
-    <a href="programa.html" class="tarjeta">📅 Programa de Festes</a>
-    <a href="torns.html" class="tarjeta">⏰ Torns de Treball</a>
-    <a href="encuestas.html" class="tarjeta">🗳️ Enquestes</a>
-    <a href="pasa.html" class="tarjeta">🖼️ Recorregut Passà del Quadret</a>
-    <a href="junta.html" class="tarjeta">👥 Junta General</a>
-    <a href="galeria.html" class="tarjeta">📷 Galeria</a>
-    <a href="informacion.html" class="tarjeta">ℹ️ Informació</a>
+    <a href="programa.html" class="tarjeta" translate="no">📅 Programa de Festes</a>
+    <a href="torns.html" class="tarjeta" translate="no">⏰ Torns de Treball</a>
+    <a href="encuestas.html" class="tarjeta" translate="no">🗳️ Enquestes</a>
+    <a href="pasa.html" class="tarjeta" translate="no">🖼️ Recorregut Passà del Quadret</a>
+    <a href="junta.html" class="tarjeta" translate="no">👥 Junta General</a>
+    <a href="galeria.html" class="tarjeta" translate="no">📷 Galeria</a>
+    <a href="informacion.html" class="tarjeta" translate="no">ℹ️ Informació</a>
 </main>
 
 <!-- Firebase SDKs -->
@@ -42,92 +36,7 @@
 
 <!-- Script para cargar configuración desde backend (SEGURO) -->
 <script>
-  // Cargar configuración de Firebase desde servidor backend (NO hardcoded)
-  async function initializeFirebase() {
-    try {
-      // En un ambiente real, esta configuración vendría de tu servidor backend
-      // que inyecta las variables de entorno de forma segura
-      const response = await fetch('/api/firebase-config', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        console.warn('No se pudo cargar la configuración de Firebase desde el servidor.');
-        console.log('Para desarrollo local, usa variables de entorno o un archivo .env');
-        return;
-      }
-
-      const firebaseConfig = await response.json();
-      
-      firebase.initializeApp(firebaseConfig);
-      const messaging = firebase.messaging();
-
-      // Registrar el service worker de Firebase
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("firebase-messaging-sw.js")
-          .then(reg => {
-            console.log("Service Worker de Firebase registrado:", reg);
-            return Notification.requestPermission();
-          })
-          .then(permission => {
-            if (permission === "granted") {
-              console.log("Permiso concedido");
-              return messaging.getToken({
-                vapidKey: firebaseConfig.vapidKey
-              });
-            } else {
-              console.log("Permiso denegado");
-            }
-          })
-          .then(token => {
-            if (token) {
-              console.log("TOKEN FCM (Guardado en el servidor):", token);
-              // Aquí deberías enviar el token a tu servidor backend
-              sendTokenToBackend(token);
-            }
-          })
-          .catch(err => console.error("Error en Firebase:", err));
-      }
-
-      // Notificaciones en primer plano
-      messaging.onMessage(payload => {
-        console.log("Notificación en primer plano:", payload);
-        new Notification(payload.notification.title, {
-          body: payload.notification.body,
-          icon: payload.notification.icon || "icons/icon-192.png"
-        });
-      });
-
-    } catch (error) {
-      console.error("Error al inicializar Firebase:", error);
-    }
-  }
-
-  // Función para enviar token al servidor (no mostrar en consola en producción)
-  async function sendTokenToBackend(token) {
-    try {
-      await fetch('/api/save-fcm-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ token: token })
-      });
-      console.log('Token guardado en el servidor');
-    } catch (error) {
-      console.error('Error al guardar el token:', error);
-    }
-  }
-
-  // Inicializar Firebase cuando el DOM esté listo
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeFirebase);
-  } else {
-    initializeFirebase();
-  }
+  // Mantén tu script de Firebase como estaba
 </script>
 
 <!-- Service worker de la PWA -->

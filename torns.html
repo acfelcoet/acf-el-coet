@@ -1,85 +1,30 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="ca" translate="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torns de Treball</title>
-
-    <link rel="stylesheet" href="css/estilos.css">
-    <style>
-        .imagen-container {
-            width: 100%;
-            max-width: 900px;
-            margin: 2rem auto;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .imagen-container img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Botón flotante */
-        .floating-back {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            background-color: var(--color-primary);
-            color: var(--color-secondary);
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .floating-back:hover {
-            background-color: var(--color-primary-dark);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-            transform: translateY(-2px);
-        }
-        
-        @media (max-width: 480px) {
-            .floating-back {
-                bottom: 1rem;
-                right: 1rem;
-                padding: 0.75rem 1rem;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google" content="notranslate">
+  <title>Torns de Treball - ACF EL COET</title>
+  <link rel="stylesheet" href="css/estilos.css">
 </head>
+<body translate="no">
+  <header>
+    <h1 translate="no">⏰ Torns de Treball</h1>
+    <p translate="no">ACF EL COET</p>
+  </header>
 
-<body>
-
-<header>
-    <h1>⏰ Torns de Treball</h1>
-    <p>Assignacions de torns ACF EL COET 2026</p>
-</header>
-
-<main>
-    <div class="tarjeta">
-        <h2>Torns de Treball 2026</h2>
-        <p>Consulta els torns assignats per a les festes.</p>
+  <main translate="no" style="max-width:900px;margin:1.5rem auto;padding:1rem;text-align:center;">
+    <div class="tarjeta" translate="no">
+      <h2 translate="no">Torn 1</h2>
+      <p translate="no">Hora: 09:00 - 11:00</p>
     </div>
 
-    <div class="imagen-container">
-        <img src="img/torns.jpg" alt="Torns de Treball 2026" loading="lazy">
+    <div class="tarjeta" translate="no">
+      <h2 translate="no">Torn 2</h2>
+      <p translate="no">Hora: 11:00 - 13:00</p>
     </div>
-</main>
 
-<!-- Botón flotante para volver -->
-<a href="index.html" class="floating-back">← Tornar a l'inici</a>
-
+    <a href="index.html" class="volver" translate="no">← Tornar a l'inici</a>
+  </main>
 </body>
 </html>

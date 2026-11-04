@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ca" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>ACF EL COET</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="description" content="App oficial de l'Associació Cultural i Festera EL COET: programa de festes, torns de treball, enquestes i avisos.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body translate="no">
+
+<header>
+    <img src="img/logo.png" alt="Logo ACF EL COET" class="logo" translate="no">
+    <h1 translate="no">ACF EL COET</h1>
+    <p translate="no">Associació Cultural i Festera</p>
+</header>
+
+<main>
+    <a href="programa.html" class="tarjeta" translate="no">📅 Programa de Festes</a>
+    <a href="torns.html" class="tarjeta" translate="no">⏰ Torns de Treball</a>
+    <a href="encuestas.html" class="tarjeta" translate="no">🗳️ Enquestes</a>
+    <a href="pasa.html" class="tarjeta" translate="no">🖼️ Recorregut Passà del Quadret</a>
+    <a href="junta.html" class="tarjeta" translate="no">👥 Junta General</a>
+    <a href="galeria.html" class="tarjeta" translate="no">📷 Galeria</a>
+    <a href="informacion.html" class="tarjeta" translate="no">ℹ️ Informació</a>
+</main>
+
+<!-- Avisos push: es mostra només si el navegador ho permet (vegeu js/push.js) -->
+<section class="notificaciones" id="notificaciones" hidden translate="no">
+    <h2 translate="no">🔔 Avisos de l'associació</h2>
+    <p id="notif-estado" translate="no">Activa els avisos per a rebre un missatge quan hi haja canvis a la web.</p>
+    <button class="boton" id="notif-btn" type="button" disabled translate="no">Activar avisos</button>
+    <p style="margin-top:.75rem;font-size:.85rem"><a href="prova.html">🔎 Comprovar si este dispositvo permet avisos</a></p>
+</section>
+
+<!-- Configuració de Firebase (compartida amb el service worker) -->
+<script src="js/firebase-config.js"></script>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- Service worker (PWA + avisos) i botó de subscripció -->
+<script src="js/push.js" defer></script>
+
+</body>
+</html>

@@ -4,6 +4,12 @@
 .env.*.local
 config.local.json
 
+# Claves de servicio de Firebase (NUNCA al repositorio)
+*service-account*.json
+*serviceAccount*.json
+firebase-adminsdk*.json
+*-adminsdk-*.json
+
 # Archivos de sistema
 .DS_Store
 Thumbs.db

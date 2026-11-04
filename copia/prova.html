@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ca" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>Comprovar avisos - ACF EL COET (còpia)</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <style>
+        main.comprovacions { flex-direction: column; max-width: 720px; }
+        .caja { width: 100%; background: #fff; border: 2px solid var(--color-border);
+                border-radius: 12px; padding: 1.25rem; box-shadow: var(--shadow); }
+        .caja h2 { font-size: 1.15rem; color: var(--color-primary); margin-bottom: .75rem; }
+        ul#llista { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+        ul#llista li { display: flex; gap: .6rem; align-items: flex-start; font-size: .95rem; }
+        .marca { font-weight: 700; min-width: 1.4rem; text-align: center; }
+        .ok { color: #1e7f3c; }
+        .ko { color: #b3261e; }
+        .warn { color: #a15c00; }
+        .detall { color: #666; font-size: .85rem; display: block; word-break: break-all; }
+        .accions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
+        .accions button { border: none; cursor: pointer; font-size: 1rem; }
+        .nota { font-size: .85rem; color: #666; margin-top: 1rem; }
+        @media (prefers-color-scheme: dark) {
+            .caja { background: #2a2a2a; }
+            .detall, .nota { color: #bbb; }
+        }
+    </style>
+</head>
+<body translate="no">
+
+<header>
+    <img src="img/logo.png" alt="Logo ACF EL COET" class="logo" translate="no">
+    <h1 translate="no">🔔 Comprovar avisos</h1>
+    <p translate="no">Còpia de proves · ACF EL COET</p>
+</header>
+
+<main class="comprovacions" translate="no">
+
+    <div class="caja" translate="no">
+        <h2>Comprovacions del navegador</h2>
+        <ul id="llista">
+            <li><span class="marca">…</span><span>Comprovant…</span></li>
+        </ul>
+
+        <div class="accions">
+            <button class="boton" id="btnProva" type="button" disabled>Mostrar notificació de prova</button>
+            <button class="boton" id="btnNOVETATS" type="button" disabled>Notificació de NOVETATS</button>
+        </div>
+
+        <p class="nota">
+            Aquesta pàgina mostra una notificació real del sistema a través del
+            service worker, sense necessitat de Firebase. És la manera de saber si
+            el teu mòbil o navegador permet avisos.
+        </p>
+    </div>
+
+    <a class="volver" href="index.html" translate="no">← Tornar a l'inici</a>
+</main>
+
+<script src="js/firebase-config.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var llista = document.getElementById("llista");
+  var btnProva = document.getElementById("btnProva");
+  var btnNOVETATS = document.getElementById("btnNOVETATS");
+  var cfg = window.FIREBASE_CONFIG || {};
+
+  function afegeix(estat, text, detall) {
+    var li = document.createElement("li");
+    var marca = document.createElement("span");
+    marca.className = "marca " + (estat === "ok" ? "ok" : estat === "warn" ? "warn" : "ko");
+    marca.textContent = estat === "ok" ? "✔" : estat === "warn" ? "!" : "✘";
+    var cos = document.createElement("span");
+    cos.textContent = text;
+    if (detall) {
+      var d = document.createElement("span");
+      d.className = "detall";
+      d.textContent = detall;
+      cos.appendChild(d);
+    }
+    li.appendChild(marca);
+    li.appendChild(cos);
+    llista.appendChild(li);
+  }
+
+  function buida() { llista.innerHTML = ""; }
+
+  buida();
+
+  var segur = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  afegeix(segur ? "ok" : "ko", "Connexió segura (HTTPS)",
+    segur ? location.origin : "Sense HTTPS no hi ha avisos");
+
+  var soportat = "serviceWorker" in navigator && "Notification" in window && "PushManager" in window;
+  afegeix(soportat ? "ok" : "ko", "El navegador permet avisos",
+    soportat ? navigator.userAgent.slice(0, 80) : "Navegador sense suport de notificacions");
+
+  if ("Notification" in window) {
+    var p = Notification.permission;
+    afegeix(p === "granted" ? "ok" : p === "denied" ? "ko" : "warn",
+      "Permís de notificacions: " + (p === "granted" ? "concedit" : p === "denied" ? "bloquejat" : "encara no demanat"),
+      p === "denied" ? "Cal activar-lo als ajustos del lloc" : "");
+  }
+
+  var configurat = !!cfg.vapidKey && !/REEMPLAZA/i.test(cfg.vapidKey);
+  afegeix(configurat ? "ok" : "warn", "Clau VAPID de Firebase",
+    configurat ? "Configurada" : "Pendent: mentre falte, els avisos automàtics no es poden activar");
+
+  afegeix("ok", "Col·lecció de dispositius de la còpia", cfg.coleccioTokens || "fcmTokens");
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("firebase-messaging-sw.js", { scope: "./" })
+      .then(function () { return navigator.serviceWorker.ready; })
+      .then(function (reg) {
+        afegeix("ok", "Service worker actiu", reg.scope);
+        btnProva.disabled = false;
+        btnNOVETATS.disabled = false;
+      })
+      .catch(function (e) {
+        afegeix("ko", "El service worker no s'ha pogut registrar", String(e && e.message || e));
+      });
+  }
+
+  function mostra(titol, cos, imatge) {
+    if (!("Notification" in window)) return;
+    Notification.requestPermission().then(function (permis) {
+      if (permis !== "granted") {
+        afegeix("ko", "No s'ha concedit el permís per a mostrar la notificació", "");
+        return;
+      }
+      return navigator.serviceWorker.ready.then(function (reg) {
+        return reg.showNotification(titol, {
+          body: cos,
+          icon: "icons/icon-192.png",
+          badge: "icons/icon-192.png",
+          tag: "prova-acf",
+          data: { url: new URL(imatge, location.href).href }
+        });
+      }).then(function () {
+        afegeix("ok", "Notificació enviada al sistema", "Si no la veus, revisa el centre de notificacions o els ajustos del lloc");
+      });
+    }).catch(function (e) {
+      afegeix("ko", "Error mostrant la notificació", String(e && e.message || e));
+    });
+  }
+
+  btnProva.addEventListener("click", function () {
+    mostra("Prova d'avisos", "Així es veuran les notificacions de l'associació.", "index.html");
+  });
+
+  btnNOVETATS.addEventListener("click", function () {
+    mostra("NOVETATS · ACF EL COET", "Hi ha una imatge nova a la carpeta NOVETATS. Mira-la!", "NOVETATS/novetat-1.jpg");
+  });
+})();
+</script>
+
+</body>
+</html>

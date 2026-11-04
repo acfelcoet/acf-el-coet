@@ -270,6 +270,44 @@ main {
   }
 }
 
+/* ===== AVISOS PUSH ===== */
+.notificaciones {
+  max-width: 600px;
+  margin: 0 auto 2.5rem auto;
+  padding: 1.5rem;
+  background-color: var(--color-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.notificaciones[hidden] {
+  display: none;
+}
+
+.notificaciones h2 {
+  font-size: 1.2rem;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.notificaciones p {
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.notificaciones .boton {
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.notificaciones .boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Estilos para la página pasa del quadret */
 .pasa-imagen {
   max-width: 100%;

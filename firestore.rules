@@ -1,0 +1,45 @@
+rules_version = '2';
+
+// ACF EL COET - Reglas de Firestore
+// Pegar en Firebase → Firestore Database → Reglas.
+//
+// Colección "fcmTokens": un documento por dispositivo suscrito a avisos.
+// - Cualquiera puede registrar/actualizar su token (la web es pública).
+// - Nadie puede LEER ni listar los tokens desde el navegador
+//   (así no se pueden enumerar ni reutilizar).
+// - El envío de avisos lo hace GitHub Actions con la clave de servicio,
+//   que se salta estas reglas.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function tokenValido(tokenId) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['token', 'ua', 'lang', 'createdAt', 'updatedAt'])
+        && d.token == tokenId
+        && d.token is string
+        && d.token.size() > 50 && d.token.size() < 400
+        && d.ua is string && d.ua.size() <= 250
+        && d.lang is string && d.lang.size() <= 20
+        && d.updatedAt == request.time;
+    }
+
+    match /fcmTokens/{tokenId} {
+      allow read, list: if false;
+      allow create, update: if tokenValido(tokenId);
+      allow delete: if true;
+    }
+
+    // Còpia de proves: mai arriba als dispositius reals.
+    match /fcmTokensProva/{tokenId} {
+      allow read, list: if false;
+      allow create, update: if tokenValido(tokenId);
+      allow delete: if true;
+    }
+
+    // Todo lo demás queda cerrado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "acf-notificar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Envía avisos push a los dispositivos suscritos cuando cambia la web",
+  "main": "index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.2"
+  }
+}

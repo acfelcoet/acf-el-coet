@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ca" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>Junta General</title>
+
+    <link rel="stylesheet" href="css/estilos.css">
+    <style>
+        .imagen-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 2rem auto;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .imagen-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Botón flotante */
+        .floating-back {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background-color: var(--color-primary);
+            color: var(--color-secondary);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .floating-back:hover {
+            background-color: var(--color-primary-dark);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 480px) {
+            .floating-back {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body translate="no">
+
+<header>
+    <h1 translate="no">👥 Junta General</h1>
+    <p translate="no">Associació Cultural i Festera</p>
+</header>
+
+<main translate="no">
+    <div class="tarjeta" translate="no">
+        <h2 translate="no">Próxima Junta General</h2>
+        <p translate="no">📅 Divendres 26 de juny de 2026</p>
+        <p translate="no">📍 Ateneu de Picanya</p>
+        <p translate="no">🕙 22:00 h - Sopar de sobaquillo</p>
+        <p translate="no">🕚 23:15 h - Junta General</p>
+    </div>
+
+    <div class="imagen-container">
+        <img src="img/junta.jpg" alt="Convocatòria Junta General 2026" loading="lazy">
+    </div>
+</main>
+
+<!-- Botón flotante para volver -->
+<a href="index.html" class="floating-back" translate="no">← Tornar a l'inici</a>
+
+</body>
+</html>

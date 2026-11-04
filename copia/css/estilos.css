@@ -1,0 +1,319 @@
+/* =====================================================
+   ACF EL COET - Estilos Principales
+   Actualizado: 2026-06-22 14:25
+   ===================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color-primary: #2c3e50;
+  --color-primary-dark: #1a252f;
+  --color-secondary: #ffffff;
+  --color-text: #333333;
+  --color-light-bg: #f5f5f5;
+  --color-border: #e0e0e0;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 8px 12px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s ease;
+}
+
+/* ===== HTML & BODY ===== */
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-light-bg);
+  line-height: 1.6;
+}
+
+/* ===== HEADER ===== */
+header {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
+  padding: 2rem 1rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+  border-bottom: 4px solid var(--color-primary);
+}
+
+header .logo {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background-color: transparent;
+  padding: 10px;
+  margin-bottom: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  object-fit: contain;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+}
+
+header p {
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 1px;
+  color: var(--color-text);
+}
+
+/* ===== MAIN CONTENT ===== */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+/* ===== TARJETAS (CARDS) ===== */
+.tarjeta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 1.5rem;
+  background-color: var(--color-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  cursor: pointer;
+  min-height: 120px;
+  text-align: center;
+  gap: 0.5rem;
+  flex: 0 1 calc(50% - 0.75rem);
+  min-width: 200px;
+}
+
+.tarjeta:hover {
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+  border-color: var(--color-primary-dark);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-5px);
+}
+
+.tarjeta:active {
+  transform: translateY(-2px);
+}
+
+/* Emoji styling dentro de tarjetas */
+.tarjeta::before {
+  font-size: 2.5rem;
+}
+
+/* Estilos para páginas internas */
+.volver {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.volver:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.boton {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: var(--transition);
+  border: 2px solid var(--color-primary);
+}
+
+.boton:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  header {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  header .logo {
+    width: 120px;
+    height: 120px;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  header p {
+    font-size: 0.95rem;
+  }
+
+  main {
+    gap: 1rem;
+    padding: 0 0.5rem 1.5rem 0.5rem;
+  }
+
+  .tarjeta {
+    padding: 1.25rem;
+    font-size: 1rem;
+    min-height: 110px;
+    flex: 0 1 calc(50% - 0.5rem);
+  }
+
+  .tarjeta::before {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  header p {
+    font-size: 0.85rem;
+  }
+
+  header .logo {
+    width: 100px;
+    height: 100px;
+  }
+
+  main {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tarjeta {
+    padding: 1rem;
+    font-size: 0.95rem;
+    min-height: 100px;
+    flex: 1 1 100%;
+  }
+
+  .tarjeta::before {
+    font-size: 1.8rem;
+  }
+}
+
+/* ===== ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== DARK MODE ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-light-bg: #1a1a1a;
+    --color-text: #e0e0e0;
+    --color-secondary: #2a2a2a;
+    --color-border: #404040;
+  }
+
+  header {
+    background-color: #1a1a1a;
+    color: var(--color-text);
+  }
+
+  header h1 {
+    color: var(--color-primary);
+  }
+
+  header .logo {
+    background-color: transparent;
+  }
+}
+
+/* ===== IMPRESIÓN ===== */
+@media print {
+  body {
+    background: white;
+  }
+
+  header, .tarjeta {
+    box-shadow: none;
+    border: 1px solid black;
+  }
+}
+
+/* ===== AVISOS PUSH ===== */
+.notificaciones {
+  max-width: 600px;
+  margin: 0 auto 2.5rem auto;
+  padding: 1.5rem;
+  background-color: var(--color-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.notificaciones[hidden] {
+  display: none;
+}
+
+.notificaciones h2 {
+  font-size: 1.2rem;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.notificaciones p {
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.notificaciones .boton {
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.notificaciones .boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Estilos para la página pasa del quadret */
+.pasa-imagen {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+  display: block;
+  margin: 1rem auto;
+}

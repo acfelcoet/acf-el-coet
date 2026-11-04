@@ -14,9 +14,7 @@
         ul#llista { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
         ul#llista li { display: flex; gap: .6rem; align-items: flex-start; font-size: .95rem; }
         .marca { font-weight: 700; min-width: 1.4rem; text-align: center; }
-        .ok { color: #1e7f3c; }
-        .ko { color: #b3261e; }
-        .warn { color: #a15c00; }
+        .ok { color: #1e7f3c; } .ko { color: #b3261e; } .warn { color: #a15c00; }
         .detall { color: #666; font-size: .85rem; display: block; word-break: break-all; }
         .accions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
         .accions button { border: none; cursor: pointer; font-size: 1rem; }
@@ -39,9 +37,7 @@
 
     <div class="caja" translate="no">
         <h2>Comprovacions del navegador</h2>
-        <ul id="llista">
-            <li><span class="marca">…</span><span>Comprovant…</span></li>
-        </ul>
+        <ul id="llista"></ul>
 
         <div class="accions">
             <button class="boton" id="btnProva" type="button" disabled>Mostrar notificació de prova</button>
@@ -49,16 +45,16 @@
         </div>
 
         <p class="nota">
-            Aquesta pàgina mostra una notificació real del sistema a través del
-            service worker, sense necessitat de Firebase. És la manera de saber si
-            el teu mòbil o navegador permet avisos.
+            Els dos botons mostren una notificació real del sistema a través del
+            service worker, sense dependre de cap servei extern. És la manera de
+            saber si aquest mòbil o navegador permet avisos.
         </p>
     </div>
 
     <a class="volver" href="index.html" translate="no">← Tornar a l'inici</a>
 </main>
 
-<script src="js/firebase-config.js"></script>
+<script src="js/config.js"></script>
 <script>
 (function () {
   "use strict";
@@ -66,7 +62,7 @@
   var llista = document.getElementById("llista");
   var btnProva = document.getElementById("btnProva");
   var btnNOVETATS = document.getElementById("btnNOVETATS");
-  var cfg = window.FIREBASE_CONFIG || {};
+  var cfg = window.ACF_CONFIG || {};
 
   function afegeix(estat, text, detall) {
     var li = document.createElement("li");
@@ -86,13 +82,8 @@
     llista.appendChild(li);
   }
 
-  function buida() { llista.innerHTML = ""; }
-
-  buida();
-
   var segur = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
-  afegeix(segur ? "ok" : "ko", "Connexió segura (HTTPS)",
-    segur ? location.origin : "Sense HTTPS no hi ha avisos");
+  afegeix(segur ? "ok" : "ko", "Connexió segura (HTTPS)", segur ? location.origin : "Sense HTTPS no hi ha avisos");
 
   var soportat = "serviceWorker" in navigator && "Notification" in window && "PushManager" in window;
   afegeix(soportat ? "ok" : "ko", "El navegador permet avisos",
@@ -105,14 +96,14 @@
       p === "denied" ? "Cal activar-lo als ajustos del lloc" : "");
   }
 
-  var configurat = !!cfg.vapidKey && !/REEMPLAZA/i.test(cfg.vapidKey);
-  afegeix(configurat ? "ok" : "warn", "Clau VAPID de Firebase",
-    configurat ? "Configurada" : "Pendent: mentre falte, els avisos automàtics no es poden activar");
+  var configurat = !!cfg.onesignalAppId && !/REEMPLAZA/i.test(cfg.onesignalAppId);
+  afegeix(configurat ? "ok" : "warn", "App ID de OneSignal",
+    configurat ? "Configurat" : "Pendent: poseu-lo a js/config.js per a rebre avisos enviats des del panel");
 
-  afegeix("ok", "Col·lecció de dispositius de la còpia", cfg.coleccioTokens || "fcmTokens");
+  afegeix("ok", "Entorn d'aquests dispositius", String(cfg.entorn || "produccio"));
 
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("firebase-messaging-sw.js", { scope: "./" })
+    navigator.serviceWorker.register("service-worker.js", { scope: "./" })
       .then(function () { return navigator.serviceWorker.ready; })
       .then(function (reg) {
         afegeix("ok", "Service worker actiu", reg.scope);
@@ -120,12 +111,11 @@
         btnNOVETATS.disabled = false;
       })
       .catch(function (e) {
-        afegeix("ko", "El service worker no s'ha pogut registrar", String(e && e.message || e));
+        afegeix("ko", "El service worker no s'ha pogut registrar", String((e && e.message) || e));
       });
   }
 
   function mostra(titol, cos, imatge) {
-    if (!("Notification" in window)) return;
     Notification.requestPermission().then(function (permis) {
       if (permis !== "granted") {
         afegeix("ko", "No s'ha concedit el permís per a mostrar la notificació", "");
@@ -140,10 +130,10 @@
           data: { url: new URL(imatge, location.href).href }
         });
       }).then(function () {
-        afegeix("ok", "Notificació enviada al sistema", "Si no la veus, revisa el centre de notificacions o els ajustos del lloc");
+        afegeix("ok", "Notificació enviada al sistema", "Si no la veus, mira el centre de notificacions o els ajustos del lloc");
       });
     }).catch(function (e) {
-      afegeix("ko", "Error mostrant la notificació", String(e && e.message || e));
+      afegeix("ko", "Error mostrant la notificació", String((e && e.message) || e));
     });
   }
 

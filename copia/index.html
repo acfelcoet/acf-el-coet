@@ -31,7 +31,7 @@
     <a href="informacion.html" class="tarjeta" translate="no">ℹ️ Informació</a>
 </main>
 
-<!-- Avisos push: es mostra només si el navegador ho permet (vegeu js/push.js) -->
+<!-- Avisos push: es mostra només si el navegador ho permet (vegeu js/avisos.js) -->
 <section class="notificaciones" id="notificaciones" hidden translate="no">
     <h2 translate="no">🔔 Avisos de l'associació</h2>
     <p id="notif-estado" translate="no">Activa els avisos per a rebre un missatge quan hi haja canvis a la web.</p>
@@ -39,16 +39,10 @@
     <p style="margin-top:.75rem;font-size:.85rem"><a href="prova.html">🔎 Comprovar si aquest dispositiu permet avisos</a></p>
 </section>
 
-<!-- Configuració de Firebase (compartida amb el service worker) -->
-<script src="js/firebase-config.js"></script>
-
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<!-- Service worker (PWA + avisos) i botó de subscripció -->
-<script src="js/push.js" defer></script>
+<!-- Configuració (app ID de OneSignal) + SDK d'avisos -->
+<script src="js/config.js"></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script src="js/avisos.js" defer></script>
 
 </body>
 </html>

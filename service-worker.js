@@ -1,20 +1,17 @@
 /* =====================================================
    ACF EL COET - Service Worker únic
    -----------------------------------------------------
-   Este archivo es el ÚNICO service worker del sitio:
-   - Guarla en caché los archivos de la PWA (uso sin conexión).
-   - Recibe las notificaciones push de Firebase Cloud Messaging.
+   - Caché de la PWA (uso sin conexión).
+   - Avisos push: se apoya en OneSignal, que gestiona los
+     tokens, el envío y las claves VAPID por nosotros.
 
-   Debe seguir en la raíz del sitio, ya que Firebase usa
-   este nombre por convención y el ámbito de control ("scope")
-   tiene que cubrir todas las páginas.
+   NO hay que editar este archivo para cambiar de app de
+   OneSignal: eso se hace en js/config.js.
    ===================================================== */
 
-importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
-importScripts("js/firebase-config.js");
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 
-var CACHE = "acf-el-coet-v4";
+var CACHE = "acf-el-coet-v5";
 var ICONO = "icons/icon-192.png";
 
 var APP_SHELL = [
@@ -28,21 +25,20 @@ var APP_SHELL = [
   "galeria.html",
   "informacion.html",
   "css/estilos.css",
-  "js/firebase-config.js",
-  "js/push.js",
+  "js/config.js",
+  "js/avisos.js",
   "manifest.json",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "img/logo.png"
 ];
 
-/* ===== PWA: instalación y caché ===== */
+/* ===== Instalación y caché ===== */
 
 self.addEventListener("install", function (event) {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE).then(function (cache) {
-      /* allSettled: si un archivo falta, la instalación no falla. */
       return Promise.allSettled(
         APP_SHELL.map(function (url) {
           return cache.add(new Request(url, { cache: "reload" }));
@@ -79,7 +75,7 @@ self.addEventListener("fetch", function (event) {
 
   var url = new URL(peticion.url);
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.indexOf("/firebase-messaging-sw.js") !== -1) return;
+  if (url.pathname.indexOf("/service-worker.js") !== -1) return;
 
   /* Navegación: red primero, caché si no hay conexión. */
   if (peticion.mode === "navigate") {
@@ -122,56 +118,11 @@ self.addEventListener("fetch", function (event) {
   );
 });
 
-/* ===== Firebase Cloud Messaging ===== */
-
-if (self.FIREBASE_CONFIG && self.FIREBASE_CONFIG.projectId) {
-  firebase.initializeApp(self.FIREBASE_CONFIG);
-  var messaging = firebase.messaging();
-
-  messaging.onBackgroundMessage(function (payload) {
-    /* Si el aviso ya trae bloque "notification", Firebase lo muestra
-       solo: mostrarlo otra vez duplicaría la notificación. */
-    if (payload.notification && (payload.notification.title || payload.notification.body)) {
-      return;
-    }
-
-    var datos = payload.data || {};
-    var titulo = datos.title || "ACF EL COET";
-    var opciones = {
-      body: datos.body || "",
-      icon: datos.icon || ICONO,
-      badge: datos.badge || ICONO,
-      tag: datos.tag || "acf-el-coet",
-      data: { url: datos.url || "index.html" }
-    };
-
-    return self.registration.showNotification(titulo, opciones);
-  });
-}
-
-/* ===== Clic en la notificación ===== */
-
+/* Solo gestionamos los avisos locales de la página de comprobación:
+   los de OneSignal los abre su propio worker. */
 self.addEventListener("notificationclick", function (event) {
+  if (event.notification.tag !== "prova-acf") return;
   event.notification.close();
-
-  var destino =
-    (event.notification.data && event.notification.data.url) || "index.html";
-
-  event.waitUntil(
-    self.clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then(function (clientes) {
-        for (var i = 0; i < clientes.length; i++) {
-          var cliente = clientes[i];
-          if (cliente.url.indexOf(self.registration.scope) !== 0) continue;
-          return cliente.focus().then(function (enfocado) {
-            if (enfocado.navigate && "navigate" in enfocado) {
-              return enfocado.navigate(destino).catch(function () {});
-            }
-            return enfocado;
-          });
-        }
-        return self.clients.openWindow(destino);
-      })
-  );
+  var destino = (event.notification.data && event.notification.data.url) || "index.html";
+  event.waitUntil(self.clients.openWindow(destino));
 });

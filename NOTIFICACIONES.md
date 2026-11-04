@@ -1,101 +1,64 @@
 # 🔔 Avisos push - ACF EL COET
 
-Sistema de notificaciones: cuando se publica un cambio en la web, los
-dispositivos que han activado los avisos reciben una notificación.
+Todo el envío lo gestiona **OneSignal**. En el repositorio no hay ninguna
+clave, ni base de datos, ni workflows: solo el botón que ve el socio y un
+identificador público.
 
 ```
-GitHub (push a main)
-   └─> .github/workflows/notificar-cambios.yml
-         └─> tools/notificar/index.js  (firebase-admin)
-               ├─ lee los tokens guardados en Firestore (fcmTokens)
-               └─> FCM HTTP v1  ──> móvil/PC suscrito
+móvil del socio  ──Activar avisos──>  OneSignal  ──panel──>  notificación
+     (service worker + caché de la PWA)
 ```
 
-El navegador solo **escribe** su token. Nadie puede leer la lista de
-dispositivos desde la web (ver `firestore.rules`).
+## Configurar (una sola vez, ~5 minutos)
 
----
-
-## Puesta en marcha (una sola vez)
-
-### 1. Activar Firestore
-
-1. Firebase Console → proyecto **acfelcoet-d1f84**.
-2. *Firestore Database* → **Crear base de datos** → modo producción →
-   ubicación `europe-west` (o la más cercana).
-3. Pestaña **Reglas** → pega el contenido de `firestore.rules` → Publicar.
-
-### 2. Clave de Web Push (VAPID)
-
-1. Firebase Console → ⚙️ *Configuración del proyecto* → **Cloud Messaging**.
-2. En *Certificados push web* pulsa **Generar par de claves**.
-3. Copia la clave pública en `js/firebase-config.js`:
+1. Crea una cuenta gratuita en **https://onesignal.com**.
+2. **Settings → Push & In-App → Web → New App/Website**:
+   - Nombre: `ACF El Coet`
+   - Site URL: `https://acfelcoet.github.io/acf-el-coet/`
+   - Tipo de integración: **Custom Code** (el resto lo hace el código).
+3. **Settings → Keys & IDs** → copia el **OneSignal App ID** (empieza por unos
+   dígitos y guiones, no es secreto) y pégalo en `js/config.js`:
 
 ```javascript
-vapidKey: "BEl...tu_clave_publica..."
+window.ACF_CONFIG = {
+  onesignalAppId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  entorn: "produccio"
+};
 ```
 
-> Mientras siga el texto `REEMPLAZA_CON_TU_VAPID_KEY`, el botón de avisos
-> se muestra desactivado y no se registra ningún dispositivo.
+La copia de pruebas (`/copia/`) tiene su propio archivo con
+`entorn: "prova"`. Puedes usar el **mismo App ID** en los dos.
 
-### 3. Clave de servicio (para enviar)
+4. Publica y abre la web en el móvil → botón **Activar avisos** → Aceptar.
 
-1. Firebase Console → ⚙️ *Configuración del proyecto* → **Cuentas de servicio**.
-2. **Generar nueva clave privada** → descarga el `.json`.
-3. GitHub → repositorio → *Settings* → *Secrets and variables* → *Actions*
-   → **New repository secret**:
-   - Nombre: `FIREBASE_SERVICE_ACCOUNT`
-   - Valor: **todo el contenido del `.json`** (una sola línea, tal cual).
+> Mientras siga `REEMPLAZA_CON_TU_APP_ID`, el botón aparece desactivado y
+> nadie se suscribe.
 
-> El `.json` es la llave maestra del proyecto: no lo subas al repositorio
-> (`.gitignore` ya bloquea los nombres habituales). Si se filtra, bórralo
-> en Firebase Console y genera otro.
+## Enviar un aviso
 
-### 4. Dominios autorizados (si usas otro dominio)
+**Desde el panel de OneSignal** (móvil u ordenador): *Messages → New Push* →
+escribes título y mensaje → *Send*. Listo. No hay nada que mantener.
 
-Firebase Console → *Authentication* → *Settings* → **Dominios autorizados**:
-añade `acfelcoet.github.io` (suele añadirse solo) y cualquier dominio propio.
+Para enviar **solo a los dispositivos de prueba** (los de `/copia/`):
+en *Audience* añade el filtro **User Tag** `entorn` = `prova`.
 
----
+Para abrir una página concreta al tocar el aviso: *Launch URL*, por ejemplo
+`https://acfelcoet.github.io/acf-el-coet/programa.html`.
 
-## Cómo se envía
+## Reglas que conviene saber
 
-**Automático:** cada push a `main` que toque `*.html`, `css/`, `js/`, `img/`,
-`icons/` o `manifest.json` envía un aviso deducido de los archivos cambiados
-("S'ha actualitzat el Programa de Festes.").
+- **iPhone/iPad**: iOS 16.4 o superior y la web **añadida a la pantalla de
+  inicio** (Safari → Compartir → Añadir a pantalla de inicio). Es una
+  restricción de Apple, no del sitio. Android y ordenador no la tienen.
+- HTTPS obligatorio; en modo incógnito no funcionan los avisos.
+- Si alguien borra los datos del navegador, deja de recibirlos hasta que
+  vuelva a entrar y pulse *Activar avisos* (o active *Auto Resubscribe* en el
+  panel).
+- El plan gratuito de OneSignal cubre de sobra a una asociación; consulta sus
+  límites actuales en su web.
 
-**Manual:** GitHub → *Actions* → **Avisar de canvis en la web** →
-*Run workflow* → escribe título y mensaje.
+## Si algún día quieres envío automático al publicar
 
-**Desde tu ordenador:**
-
-```bash
-FIREBASE_SERVICE_ACCOUNT="$(cat clave-servicio.json)" \
-TITULO="Assemblea general" \
-MENSAJE="Divendres 26 de juny a les 22:00 h a l'Ateneu" \
-URL_DESTINO="junta.html" \
-node tools/notificar/index.js
-```
-
-Sin enviar nada (comprobar el texto que saldría):
-
-```bash
-DRY_RUN=1 node tools/notificar/index.js
-```
-
----
-
-## Comportamiento
-
-- Se envía en lotes de 500 dispositivos (máximo 5.000 por ejecución).
-- Los tokens que Firebase marca como caducados se borran de Firestore.
-- Si el secret no está configurado, el workflow **no falla**: avisa con un
-  `warning` y termina.
-- Un mismo cambio no se reenvía: el workflow solo corre con los cambios de
-  la web, no con los de `tools/`, `.github/` ni `*.md`.
-
-## Límites de Firebase (plan gratuito)
-
-- Mensajería FCM: sin coste.
-- Firestore: 20.000 escrituras/día y 50.000 lecturas/día.
-  Cada suscripción gasta 1 escritura; una visita repetida, otra.
+OneSignal tiene una API REST. Bastaría un workflow de GitHub con una clave de
+API como secret. No está montado a propósito: el envío manual desde el panel
+no se rompe nunca y no hay claves que caduquen.

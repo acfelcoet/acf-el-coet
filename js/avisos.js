@@ -402,6 +402,21 @@
           pintarDetalle();
           return;
         }
+        if (/not configured for web push/i.test(detalle)) {
+          mostrarHTML(
+            "El servei d'avisos encara no està activat al panell d'OneSignal: falta donar d'alta la " +
+              "<strong>plataforma Web</strong> de l'aplicació." +
+              "<br><br>" +
+              "Ho ha de fer la junta a <strong>onesignal.com → Settings → Push &amp; In-App → Web</strong>, " +
+              "triant <strong>Custom Code</strong> i posant com a <strong>Site URL</strong>: " +
+              "<strong>https://acfelcoet.github.io</strong> (sense la carpeta final)." +
+              "<br><br>" +
+              "Quan estiga desat, torna ací i toca <strong>Torna-ho a provar</strong>."
+          );
+          botonTexto("Torna-ho a provar", "reintentar");
+          pintarDetalle();
+          return;
+        }
         mostrar(
           "No s'ha pogut preparar el sistema d'avisos." +
             (detalle ? " (" + detalle + ")" : "")

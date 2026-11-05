@@ -17,7 +17,7 @@ try {
   importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 }
 
-var CACHE = "acf-el-coet-v12";
+var CACHE = "acf-el-coet-v13";
 var ICONO = "icons/icon-192.png";
 
 var APP_SHELL = [

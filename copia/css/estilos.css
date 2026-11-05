@@ -386,3 +386,10 @@ main {
     font-size: 1.25rem;
   }
 }
+/* Línia d estat dels avisos (js/avisos.js) */
+.notif-detalle {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  opacity: 0.7;
+}

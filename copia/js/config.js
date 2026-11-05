@@ -12,6 +12,6 @@
      un aviso SOLO a los dispositivos de prueba desde el panel.
    ===================================================== */
 window.ACF_CONFIG = {
-  onesignalAppId: "REEMPLAZA_CON_TU_APP_ID",
+  onesignalAppId: "a93f8d73-1229-4a32-aea6-bc525e771e41",
   entorn: "prova"
 };

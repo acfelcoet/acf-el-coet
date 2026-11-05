@@ -11,7 +11,7 @@
 
 importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 
-var CACHE = "acf-el-coet-v8";
+var CACHE = "acf-el-coet-v9";
 var ICONO = "icons/icon-192.png";
 
 var APP_SHELL = [

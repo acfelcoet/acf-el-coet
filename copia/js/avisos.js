@@ -1,7 +1,11 @@
 /* =====================================================
-   ACF EL COET - Botón de avisos (OneSignal)
+   ACF EL COET - Botó d'avisos (OneSignal)
    -----------------------------------------------------
-   No hay nada que configurar aquí: el App ID está en js/config.js.
+   No hi ha res a configurar ací: l'App ID està a js/config.js.
+
+   Nota sobre iPhone/iPad: Apple només permet avisos push si la web
+   s'ha afegit a la pantalla d'inici (iOS 16.4 o posterior) i s'obri
+   des d'eixa icona. Ací es detecta el cas i s'expliquen els passos.
    ===================================================== */
 (function () {
   "use strict";
@@ -20,14 +24,27 @@
   var CONFIGURADO =
     !!cfg.onesignalAppId && !/REEMPLAZA/i.test(cfg.onesignalAppId);
 
+  var USUARIO = navigator.userAgent || "";
+  var ES_MOVIL_APPLE =
+    /iPhone|iPad|iPod/.test(USUARIO) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
   var os = null;
   var accion = "activar";
 
   function estado(texto, esError) {
     contenedor.hidden = false;
-    if (estadoEl) estadoEl.textContent = texto;
+    if (estadoEl) {
+      estadoEl.innerHTML = "";
+      estadoEl.textContent = texto;
+    }
     if (esError) console.warn("Avisos:", texto);
     else console.log("Avisos:", texto);
+  }
+
+  function estadoHTML(html) {
+    contenedor.hidden = false;
+    if (estadoEl) estadoEl.innerHTML = html;
   }
 
   function botonAccion(nuevaAccion, texto) {
@@ -42,6 +59,22 @@
     if (boton) boton.disabled = true;
   }
 
+  /* Versió d'iOS (null si no es pot saber). */
+  function versionIOS() {
+    var m = USUARIO.match(/OS (\d+)_(\d+)/);
+    return m ? parseFloat(m[1] + "." + m[2]) : null;
+  }
+
+  /* La web s'està veient com a aplicació (pantalla d'inici) o en una pestanya? */
+  function esAppInstalada() {
+    if (window.navigator.standalone === true) return true;
+    if (!window.matchMedia) return false;
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.matchMedia("(display-mode: fullscreen)").matches
+    );
+  }
+
   function estaSuscrito() {
     try {
       return (
@@ -53,12 +86,34 @@
     }
   }
 
+  function instruccionesIPhone() {
+    contenedor.hidden = false;
+    if (boton) {
+      boton.disabled = true;
+      boton.textContent = "Com activar-ho";
+    }
+    estadoHTML(
+      "Per a rebre avisos a l'iPhone o a l'iPad cal tindre la web a la pantalla d'inici:" +
+        "<br><br>" +
+        "1. Obri aquesta web amb <strong>Safari</strong>." +
+        "<br>" +
+        "2. Toca <strong>Compartir</strong> (el quadre amb la fletxa cap amunt)." +
+        "<br>" +
+        "3. Tria <strong>Afegir a la pantalla d'inici</strong> i guarda." +
+        "<br>" +
+        "4. Tanca Safari i obri <strong>El Coet</strong> des de la icona nova." +
+        "<br>" +
+        "5. Ací baix toca <strong>Activar avisos</strong> i després <strong>Permetre</strong>."
+    );
+    console.log("Avisos: a l'iPhone cal obrir la web des de la pantalla d'inici.");
+  }
+
   function pintar() {
     if (!CONFIGURADO) return;
 
-    if (Notification.permission === "denied") {
+    if (typeof Notification !== "undefined" && Notification.permission === "denied") {
       deshabilitar(
-        "Els avisos estan bloquejats en aquest navegador. Activa'ls des dels ajustos del lloc."
+        "Els avisos estan bloquejats en aquest dispositiu. Activa'ls a Ajustos → Notificacions → El Coet, o des dels ajustos del lloc al navegador."
       );
       return;
     }
@@ -95,9 +150,12 @@
         return null;
       })
       .then(function () {
+        if (typeof Notification === "undefined") return;
         if (Notification.permission === "granted") {
           pintar();
           if (estaSuscrito()) estado("Avisos activats. Us avisarem de les novetats.");
+          /* A l'iPhone la subscripció tarda un moment a registrar-se. */
+          setTimeout(pintar, 3000);
         }
       })
       .catch(function (error) {
@@ -134,14 +192,26 @@
     return;
   }
 
-  if (!SOPORTADO) {
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+  /* 1. iPhone/iPad en una pestanya del navegador: no es pot demanar permís. */
+  if (ES_MOVIL_APPLE && !esAppInstalada()) {
+    instruccionesIPhone();
+    return;
+  }
+
+  /* 2. iOS massa antic. */
+  if (ES_MOVIL_APPLE) {
+    var v = versionIOS();
+    if (v !== null && v < 16.4) {
       deshabilitar(
-        "Per rebre avisos a l'iPhone o iPad, afig la web a la pantalla d'inici i obri-la des d'allí."
+        "Cal iOS 16.4 o posterior per a rebre avisos. Actualitza el mòbil a Ajustos → General → Actualització de programari."
       );
-    } else {
-      deshabilitar("Aquest navegador no permet avisos.");
+      return;
     }
+  }
+
+  /* 3. Navegador sense suport. */
+  if (!SOPORTADO) {
+    deshabilitar("Aquest navegador no permet avisos.");
     return;
   }
 
@@ -165,10 +235,25 @@
         }
         return null;
       })
-      .then(pintar)
+      .then(function () {
+        if (
+          OneSignal.Notifications &&
+          OneSignal.Notifications.isPushSupported &&
+          !OneSignal.Notifications.isPushSupported()
+        ) {
+          deshabilitar("Aquest navegador no permet avisos push.");
+          return;
+        }
+        pintar();
+      })
       .catch(function (error) {
         console.error("Avisos: OneSignal no s'ha pogut iniciar", error);
-        deshabilitar("No s'ha pogut preparar el sistema d'avisos.");
+        var detalle = error && (error.message || error.name) ? String(error.message || error.name) : "";
+        if (detalle.length > 140) detalle = detalle.slice(0, 140) + "…";
+        deshabilitar(
+          "No s'ha pogut preparar el sistema d'avisos." +
+            (detalle ? " (" + detalle + ")" : "")
+        );
       });
   });
 })();

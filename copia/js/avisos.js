@@ -67,6 +67,11 @@
       partes.push("iOS " + (v === null ? "?" : String(v)));
     }
     partes.push(esAppInstalada() ? "app instal·lada" : "pestanya");
+    partes.push("PushManager " + ("PushManager" in window ? "sí" : "no"));
+    partes.push(
+      "PushSubscriptionOptions " +
+        (typeof window.PushSubscriptionOptions === "undefined" ? "no" : "sí")
+    );
     partes.push(listo || os ? "sistema carregat" : "sistema no carregat");
     detalleEl.textContent = partes.join(" · ");
   }
@@ -272,18 +277,35 @@
 
   /* ---------- arrancada d'OneSignal ---------- */
 
+  /* El SDK de OneSignal viu a la pròpia web (js/onesignal/page.js), així que
+     no depèn del CDN ni del seu detector de compatibilitat. Si algun dia
+     faltara el fitxer local, es prova el del CDN com a recanvi. */
+  var FUENTES_SDK = [
+    "js/onesignal/page.js",
+    "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.es6.js?v=160700"
+  ];
+  var indiceSDK = 0;
+
   function cargarSDK() {
     if (window.OneSignal || cargando) return;
+    if (indiceSDK >= FUENTES_SDK.length) {
+      sinSDK("No s'ha pogut carregar el sistema d'avisos des d'aquest mòbil.");
+      return;
+    }
     cargando = true;
+    var fuente = FUENTES_SDK[indiceSDK];
     var s = document.createElement("script");
-    s.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
+    s.src = fuente;
     s.async = true;
+    s.onload = function () {
+      cargando = false;
+      console.log("Avisos: carregat", fuente);
+    };
     s.onerror = function () {
       cargando = false;
-      console.warn("Avisos: no s'ha pogut baixar el SDK de OneSignal");
-      sinSDK(
-        "El navegador no ha pogut descarregar el sistema d'avisos. Pot ser un bloquejador de contingut o la connexió."
-      );
+      console.warn("Avisos: no ha carregat", fuente);
+      indiceSDK += 1;
+      cargarSDK();
     };
     document.head.appendChild(s);
   }
@@ -370,6 +392,8 @@
     if (accion === "ayuda") return ayuda();
     if (accion === "reintentar") {
       listo = false;
+      cargando = false;
+      indiceSDK = 0;
       mostrar("Carregant el sistema d'avisos…");
       botonTexto("Espera un moment…", "reintentar");
       cargarSDK();

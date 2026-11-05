@@ -9,9 +9,15 @@
    OneSignal: eso se hace en js/config.js.
    ===================================================== */
 
-importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+/* SDK d'avisos de OneSignal, allotjat ací mateix (js/onesignal/sw.js).
+   Si un dia faltara, es recorre al del CDN. */
+try {
+  importScripts("js/onesignal/sw.js");
+} catch (e) {
+  importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+}
 
-var CACHE = "acf-el-coet-v10";
+var CACHE = "acf-el-coet-v11";
 var ICONO = "icons/icon-192.png";
 
 var APP_SHELL = [

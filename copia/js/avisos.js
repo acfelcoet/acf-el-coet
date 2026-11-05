@@ -228,14 +228,9 @@
           }
           return;
         }
-        return os.User.PushSubscription.optIn()
-          .then(function () {
-            if (!cfg.entorn) return null;
-            return os.User.addTag("entorn", String(cfg.entorn)).catch(function () {
-              return null;
-            });
-          })
-          .then(function () {
+        return conTiempo(os.User.PushSubscription.optIn(), 25000, "subscripció").then(
+          function () {
+            etiquetar(os);
             trabajando = false;
             pintar();
             if (suscrito()) {
@@ -243,7 +238,8 @@
             }
             /* A l'iPhone la subscripció tarda un moment a registrar-se. */
             setTimeout(pintar, 4000);
-          });
+          }
+        );
       })
       .catch(function (error) {
         trabajando = false;
@@ -317,26 +313,70 @@
     pintarDetalle();
   }
 
+  /* Espera una promesa com a molt ms mil·lisegons. Així la pantalla no es
+     queda mai penjada esperant una resposta de la xarxa. */
+  function conTiempo(promesa, ms, que) {
+    return new Promise(function (resolve, reject) {
+      var hecho = false;
+      var t = setTimeout(function () {
+        if (hecho) return;
+        hecho = true;
+        reject(new Error("temps d'espera esgotat" + (que ? " (" + que + ")" : "")));
+      }, ms);
+      promesa.then(
+        function (valor) {
+          if (hecho) return;
+          hecho = true;
+          clearTimeout(t);
+          resolve(valor);
+        },
+        function (error) {
+          if (hecho) return;
+          hecho = true;
+          clearTimeout(t);
+          reject(error);
+        }
+      );
+    });
+  }
+
+  function esTiempoAgotado(error) {
+    return !!(error && /temps d'espera/i.test(String(error.message || "")));
+  }
+
+  /* L'etiqueta d'entorn és opcional: va en segon pla i mai bloqueja la pantalla. */
+  function etiquetar(OneSignal) {
+    if (!cfg.entorn || !OneSignal || !OneSignal.User) return;
+    try {
+      OneSignal.User.addTag("entorn", String(cfg.entorn)).catch(function () {});
+    } catch (e) {
+      /* dona igual: no és imprescindible */
+    }
+  }
+
   function iniciar(OneSignal) {
     os = OneSignal;
     clearTimeout(vigilante);
+    mostrar("Connectant amb el servei d'avisos…");
+    botonTexto("Espera un moment…", "activar");
 
-    OneSignal.init({
-      appId: cfg.onesignalAppId,
-      serviceWorkerPath: new URL("service-worker.js", location.href).pathname,
-      serviceWorkerParam: { scope: new URL("./", location.href).pathname },
-      allowLocalhostAsSecureOrigin: true,
-      notifyButton: { enable: false },
-      promptOptions: { slidedown: { enabled: false } }
-    })
-      .then(function () {
-        if (!cfg.entorn) return null;
-        return OneSignal.User.addTag("entorn", String(cfg.entorn)).catch(function () {
-          return null;
-        });
-      })
+    conTiempo(
+      OneSignal.init({
+        appId: cfg.onesignalAppId,
+        serviceWorkerPath: new URL("service-worker.js", location.href).pathname,
+        serviceWorkerParam: { scope: new URL("./", location.href).pathname },
+        allowLocalhostAsSecureOrigin: true,
+        notifyButton: { enable: false },
+        promptOptions: { slidedown: { enabled: false } }
+      }),
+      20000,
+      "inici"
+    )
       .then(function () {
         listo = true;
+        clearTimeout(vigilante);
+        etiquetar(OneSignal);
+
         if (
           OneSignal.Notifications &&
           typeof OneSignal.Notifications.isPushSupported === "function" &&
@@ -352,6 +392,16 @@
       .catch(function (error) {
         console.error("Avisos: OneSignal no s'ha pogut iniciar", error);
         var detalle = textoError(error);
+        if (esTiempoAgotado(error)) {
+          mostrar(
+            "El mòbil no ha pogut connectar amb el servei d'avisos (api.onesignal.com). " +
+              "Pot ser la cobertura, un bloquejador de contingut, una VPN o el DNS del mòbil. " +
+              "Toca el botó per a tornar-ho a provar."
+          );
+          botonTexto("Torna-ho a provar", "reintentar");
+          pintarDetalle();
+          return;
+        }
         mostrar(
           "No s'ha pogut preparar el sistema d'avisos." +
             (detalle ? " (" + detalle + ")" : "")
@@ -394,16 +444,29 @@
       listo = false;
       cargando = false;
       indiceSDK = 0;
+      clearTimeout(vigilante);
+
+      /* Si el SDK ja està carregat, el que cal reintentar és la connexió. */
+      if (window.OneSignal) {
+        try {
+          iniciar(window.OneSignal);
+        } catch (e) {
+          mostrar(
+            "No s'ha pogut reiniciar el sistema d'avisos (" + textoError(e) + ")."
+          );
+          botonTexto("Torna-ho a provar", "reintentar");
+          pintarDetalle();
+        }
+        return;
+      }
+
       mostrar("Carregant el sistema d'avisos…");
       botonTexto("Espera un moment…", "reintentar");
       cargarSDK();
       arrancar();
-      clearTimeout(vigilante);
       vigilante = setTimeout(function () {
-        if (!listo) {
-          sinSDK("El sistema d'avisos continua sense carregar.");
-        }
-      }, 12000);
+        if (!listo) sinSDK("El sistema d'avisos continua sense carregar.");
+      }, 15000);
       return;
     }
     if (!listo) {

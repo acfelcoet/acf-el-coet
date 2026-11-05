@@ -375,6 +375,22 @@
       .then(function () {
         listo = true;
         clearTimeout(vigilante);
+
+        /* On ha d'anar la persona en tocar l'avís. Sense açò, OneSignal obri
+           l'arrel del domini (https://acfelcoet.github.io) i això és un 404,
+           perquè la web viu a /acf-el-coet/.
+           NOTA: a l'iPhone (Safari) este ajust no es té en compte; allí cal
+           posar el "Launch URL" al missatge des del panell. */
+        try {
+          if (OneSignal.Notifications && OneSignal.Notifications.setDefaultUrl) {
+            OneSignal.Notifications.setDefaultUrl(
+              new URL("novetats.html", location.href).href
+            );
+          }
+        } catch (e) {
+          /* si no es pot, no passa res: l'avís obrirà on puga */
+        }
+
         etiquetar(OneSignal);
 
         if (

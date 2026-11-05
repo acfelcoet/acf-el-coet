@@ -317,3 +317,72 @@ main {
   display: block;
   margin: 1rem auto;
 }
+
+/* ===== NOVETATS ===== */
+.novetats {
+  display: block;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem 1rem;
+  text-align: center;
+}
+
+.novetat {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background-color: var(--color-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.novetat-imagen {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+.novetat-texto {
+  margin-top: 1.5rem;
+}
+
+.novetat-texto h2 {
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.novetat-texto p {
+  margin-bottom: 1rem;
+}
+
+.novetat-texto p:last-child {
+  margin-bottom: 0;
+}
+
+.novetat-final {
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-primary);
+  font-size: 1.15rem;
+}
+
+.novetat-etiquetes {
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.75;
+  word-spacing: 0.15rem;
+}
+
+@media (max-width: 768px) {
+  .novetat {
+    padding: 1rem;
+  }
+
+  .novetat-texto h2 {
+    font-size: 1.25rem;
+  }
+}

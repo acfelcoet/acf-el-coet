@@ -438,6 +438,10 @@
       iniciar(OneSignal);
     });
 
+    /* Carreguem el SDK de seguida: abans només es demanava en tocar el botó,
+       i la primera visita acabava dient que el sistema no havia carregat. */
+    cargarSDK();
+
     clearTimeout(vigilante);
     vigilante = setTimeout(function () {
       if (!listo) {
